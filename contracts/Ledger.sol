@@ -10,6 +10,14 @@ contract Ledger {
         uint256 timestamp;
     }
 
+      struct TransactionResponse {
+        string userId;
+        string receiverId;
+        uint256 amount;
+        string description;
+        uint256 timestamp;
+    }
+
     Transaction[] public transactions;
     
     event TransactionCreated(
@@ -68,25 +76,35 @@ contract Ledger {
         return transactions.length;
     }
 
-    function getTransactionsByUser(string memory _userId) public view returns (Transaction[] memory) {
+    function getTransactionsByUser(string memory _userId) public view returns (TransactionResponse[] memory) {
         uint256 count = 0;
         
+        // Count matching transactions
         for (uint256 i = 0; i < transactions.length; i++) {
             if (keccak256(abi.encodePacked(transactions[i].userId)) == keccak256(abi.encodePacked(_userId))) {
                 count++;
             }
         }
         
-        Transaction[] memory userTransactions = new Transaction[](count);
+        // Initialize array with the correct size
+        TransactionResponse[] memory userTransactions = new TransactionResponse[](count);
         uint256 index = 0;
         
+        // Fill array with matching transactions
         for (uint256 i = 0; i < transactions.length; i++) {
             if (keccak256(abi.encodePacked(transactions[i].userId)) == keccak256(abi.encodePacked(_userId))) {
-                userTransactions[index] = transactions[i];
+                userTransactions[index] = TransactionResponse({
+                    userId: transactions[i].userId,
+                    receiverId: transactions[i].receiverId,
+                    amount: transactions[i].amount,
+                    description: transactions[i].description,
+                    timestamp: transactions[i].timestamp
+                });
                 index++;
             }
         }
         
         return userTransactions;
     }
+
 }

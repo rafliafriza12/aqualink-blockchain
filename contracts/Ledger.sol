@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 contract Ledger {
     struct Transaction {
-        uint256 userId;
-        uint256 receiverId;
+        string userId;
+        string receiverId;
         uint256 amount;
         string description;
         uint256 timestamp;
@@ -13,16 +13,16 @@ contract Ledger {
     Transaction[] public transactions;
     
     event TransactionCreated(
-        uint256 indexed userId,
-        uint256 indexed receiverId,
+        string indexed userId,
+        string indexed receiverId,
         uint256 amount,
         string description,
         uint256 timestamp
     );
 
     function createTransaction(
-        uint256 _userId,
-        uint256 _receiverId,
+        string memory _userId,
+        string memory _receiverId,
         uint256 _amount,
         string memory _description
     ) public {
@@ -46,8 +46,8 @@ contract Ledger {
     }
 
     function getTransaction(uint256 _index) public view returns (
-        uint256 userId,
-        uint256 receiverId,
+        string memory userId,
+        string memory receiverId,
         uint256 amount,
         string memory description,
         uint256 timestamp
@@ -68,11 +68,11 @@ contract Ledger {
         return transactions.length;
     }
 
-    function getTransactionsByUser(uint256 _userId) public view returns (Transaction[] memory) {
+    function getTransactionsByUser(string memory _userId) public view returns (Transaction[] memory) {
         uint256 count = 0;
         
         for (uint256 i = 0; i < transactions.length; i++) {
-            if (transactions[i].userId == _userId) {
+            if (keccak256(abi.encodePacked(transactions[i].userId)) == keccak256(abi.encodePacked(_userId))) {
                 count++;
             }
         }
@@ -81,7 +81,7 @@ contract Ledger {
         uint256 index = 0;
         
         for (uint256 i = 0; i < transactions.length; i++) {
-            if (transactions[i].userId == _userId) {
+            if (keccak256(abi.encodePacked(transactions[i].userId)) == keccak256(abi.encodePacked(_userId))) {
                 userTransactions[index] = transactions[i];
                 index++;
             }
